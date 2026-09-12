@@ -1,0 +1,229 @@
+@import "tailwindcss";
+
+/*
+ * Deep Cockpit theme — oxblood-on-void, VT323 for body text, Quantico for
+ * numerals/time (a deliberate two-face split, not a fallback). Locked in
+ * after a design pass comparing several dark-red/tech directions.
+ */
+:root {
+  color-scheme: dark;
+  --void: #0d0a0a;
+  --panel: #171012;
+  --panel-line: #271b1d;
+  --oxblood: #6b1622;
+  --oxblood-bright: #c23f56;
+  --oxblood-dim: #3a1218;
+  --ink: #ece4e2;
+  --ink-muted: #96807f;
+  --ink-faint: #5c4c4c;
+}
+
+@theme inline {
+  --color-void: var(--void);
+  --color-panel: var(--panel);
+  --color-panel-line: var(--panel-line);
+  --color-oxblood: var(--oxblood);
+  --color-oxblood-bright: var(--oxblood-bright);
+  --color-oxblood-dim: var(--oxblood-dim);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --font-display: var(--font-vt323);
+  --font-nums: var(--font-quantico);
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  background-color: var(--void);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(236, 228, 226, 0.025) 0px, rgba(236, 228, 226, 0.025) 1px, transparent 1px, transparent 3px),
+    radial-gradient(ellipse at 50% 0%, rgba(107, 22, 34, 0.10), transparent 60%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-vt323), ui-monospace, monospace;
+  font-size: 17px;
+}
+
+::selection {
+  background: var(--oxblood);
+  color: var(--ink);
+}
+
+@layer components {
+  /* outer double-frame chrome used to wrap each page's main content */
+  .frame {
+    border: 2px solid var(--oxblood-dim);
+    padding: 3px;
+  }
+  .frame-inner {
+    border: 1px solid var(--oxblood-dim);
+    padding: 28px 24px;
+  }
+
+  /* a cut-corner instrument panel used for every content section */
+  .panel {
+    position: relative;
+    border: 1px solid var(--panel-line);
+  }
+  .panel + .panel { margin-top: 18px; }
+  .panel::before,
+  .panel::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--oxblood-bright);
+  }
+  .panel::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .panel::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    background: rgba(107, 22, 34, 0.08);
+    border-bottom: 1px solid var(--panel-line);
+  }
+  .panel-count { color: var(--oxblood-bright); }
+
+  .panel-empty {
+    padding: 14px 16px;
+    color: var(--ink-faint);
+    font-size: 0.95rem;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 16px;
+    border-top: 1px solid var(--panel-line);
+    font-size: 1rem;
+  }
+  .row:first-child { border-top: none; }
+  .row:hover { background: rgba(107, 22, 34, 0.06); }
+  .row .title { flex: 1; color: var(--ink); min-width: 0; }
+  .row .meta { color: var(--ink-faint); font-size: 0.82rem; flex-shrink: 0; }
+
+  /* status/priority tags — Quantico, same face as numerals, since these
+     are short instrument-style readouts rather than prose */
+  .chip {
+    font-family: var(--font-quantico), sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    padding: 3px 8px;
+    border: 1px solid var(--ink-faint);
+    color: var(--ink-muted);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .chip-high { border-color: var(--oxblood-bright); color: var(--oxblood-bright); }
+  .chip-low { border-color: var(--panel-line); color: var(--ink-faint); }
+
+  .nums {
+    font-family: var(--font-quantico), sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .btn {
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--ink-muted);
+    background: transparent;
+    border: 1px solid var(--panel-line);
+    padding: 8px 16px;
+    cursor: pointer;
+    line-height: 1.2;
+  }
+  .btn:hover { border-color: var(--oxblood-bright); color: var(--ink); }
+
+  .field {
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--panel-line);
+    padding: 8px 12px;
+    line-height: 1.2;
+    caret-color: var(--oxblood-bright);
+    caret-shape: block;
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--oxblood-bright);
+  }
+  .field::placeholder { color: var(--ink-faint); }
+
+  /* checkbox-style toggle used for task/list-item completion */
+  .toggle-box {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border: 1px solid var(--panel-line);
+    background: transparent;
+    cursor: pointer;
+  }
+  .toggle-box:hover { border-color: var(--oxblood-bright); }
+  .toggle-box.checked { background: var(--oxblood); border-color: var(--oxblood-bright); }
+
+  .icon-btn {
+    color: var(--ink-faint);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .icon-btn:hover { color: var(--oxblood-bright); }
+
+  /* month calendar grid */
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .cal-weekday {
+    padding: 8px 6px;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    text-align: center;
+    border-bottom: 1px solid var(--panel-line);
+  }
+  .cal-cell {
+    min-height: 92px;
+    padding: 6px;
+    border-right: 1px solid var(--panel-line);
+    border-bottom: 1px solid var(--panel-line);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow: hidden;
+  }
+  .cal-cell:nth-child(7n) { border-right: none; }
+  .cal-cell.today { background: rgba(107, 22, 34, 0.1); }
+  .cal-cell .day-num { font-size: 0.85rem; color: var(--ink-muted); }
+  .cal-cell.today .day-num { color: var(--oxblood-bright); }
+
+  .cal-entry {
+    display: block;
+    font-size: 0.7rem;
+    line-height: 1.35;
+    color: var(--ink-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cal-entry:hover { color: var(--oxblood-bright); }
+  .cal-entry.cal-more {
+    color: var(--ink-faint);
+    cursor: default;
+  }
+}
