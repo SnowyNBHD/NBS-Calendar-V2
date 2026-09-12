@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/lib/actions/session";
 import { captureBrainDump } from "@/lib/actions/inbox";
 import Clock from "./clock";
+import NotificationToggle from "./notification-toggle";
 
 export default async function Nav() {
   const supabase = await createClient();
@@ -48,6 +49,7 @@ export default async function Nav() {
         </form>
 
         <div className="ml-auto flex items-center gap-5 text-ink-faint">
+          <NotificationToggle />
           <Clock />
           <form action={signOut}>
             <button type="submit" className="hover:text-oxblood-bright">
