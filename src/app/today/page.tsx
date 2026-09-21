@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { syncCalendarNow } from "@/lib/actions/sync";
-import { APP_TIMEZONE, localDayRange } from "@/lib/timezone";
+import { eventTime, localDayRange } from "@/lib/timezone";
 import Frame from "../frame";
 import { Panel, PanelEmpty } from "../panel";
 import { Chip } from "../chip";
@@ -43,16 +43,14 @@ export default async function TodayPage() {
         </form>
       </div>
 
+      <div className="today-grid">
+      <div className="area-events">
       <Panel title="events" count={events?.length ? String(events.length).padStart(2, "0") : "00"}>
         {events?.length ? (
           events.map((e) => (
             <div className="row" key={e.id}>
-              <span className="nums meta w-14 shrink-0">
-                {new Date(e.start_time).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  timeZone: APP_TIMEZONE,
-                })}
+              <span className="nums meta w-20 shrink-0">
+                {eventTime(new Date(e.start_time)).label}
               </span>
               <span className="title">{e.title}</span>
               {e.location ? <span className="meta">{e.location}</span> : null}
@@ -62,7 +60,9 @@ export default async function TodayPage() {
           <PanelEmpty>nothing scheduled</PanelEmpty>
         )}
       </Panel>
+      </div>
 
+      <div className="area-tasks">
       <Panel title="tasks" count={tasks?.length ? String(tasks.length).padStart(2, "0") + " open" : "00"}>
         {tasks?.length ? (
           tasks.map((t) => (
@@ -77,8 +77,10 @@ export default async function TodayPage() {
           <PanelEmpty>nothing due</PanelEmpty>
         )}
       </Panel>
+      </div>
 
       {inbox?.length ? (
+        <div className="area-unsorted">
         <Panel title="unsorted" count={`${inbox.length} new`}>
           {inbox.map((i) => (
             <div className="row" key={i.id}>
@@ -91,7 +93,9 @@ export default async function TodayPage() {
             </Link>
           </div>
         </Panel>
+        </div>
       ) : null}
+      </div>
     </Frame>
   );
 }

@@ -78,3 +78,10 @@ export function localDayRange(reference = new Date(), timeZone = APP_TIMEZONE) {
 
   return { start, end };
 }
+
+// Calendar/ICS all-day items are stored at local midnight, so a bare
+// "12:00 AM" is far more likely to mean "all day" than a midnight start.
+export function eventTime(date: Date, timeZone = APP_TIMEZONE) {
+  const time = date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone });
+  return time === "12:00 AM" ? { allDay: true, label: "all day" } : { allDay: false, label: time };
+}

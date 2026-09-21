@@ -6,7 +6,11 @@ export default function Frame({
   wide?: boolean;
 }) {
   return (
-    <main className={`mx-auto px-4 py-10 ${wide ? "max-w-4xl" : "max-w-2xl"}`}>
+    <main
+      className={`mx-auto w-full px-3 py-5 sm:px-6 sm:py-8 lg:px-8 lg:py-10 ${
+        wide ? "max-w-[1600px]" : "max-w-[1200px]"
+      }`}
+    >
       <div className="frame">
         <div className="frame-inner">{children}</div>
       </div>

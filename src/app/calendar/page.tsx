@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { APP_TIMEZONE, dateKeyInZone, localDateToUtc, todayKey } from "@/lib/timezone";
+import { dateKeyInZone, eventTime, localDateToUtc, todayKey } from "@/lib/timezone";
 import Frame from "../frame";
 import {
   addDaysToKey,
@@ -152,15 +152,15 @@ function groupEntries(
 
   for (const e of events) {
     const key = dateKeyInZone(new Date(e.start_time));
+    const start = new Date(e.start_time);
+    const { allDay, label: time } = eventTime(start);
     push(key, {
       id: `event-${e.id}`,
       kind: "event",
       title: e.title,
-      time: new Date(e.start_time).toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit",
-        timeZone: APP_TIMEZONE,
-      }),
+      time: allDay ? null : time,
+      allDay,
+      sortKey: start.getTime(),
       href: "/events",
       priority: null,
     });
@@ -173,13 +173,15 @@ function groupEntries(
       kind: "task",
       title: t.title,
       time: null,
+      allDay: false,
+      sortKey: Number.NEGATIVE_INFINITY,
       href: "/tasks",
       priority: t.priority,
     });
   }
 
   for (const list of byDay.values()) {
-    list.sort((a, b) => (a.time ?? "").localeCompare(b.time ?? ""));
+    list.sort((a, b) => a.sortKey - b.sortKey);
   }
 
   return byDay;

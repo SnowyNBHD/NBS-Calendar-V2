@@ -31,7 +31,9 @@ export default function WeekAgenda({
             {entries.length ? (
               entries.map((entry) => (
                 <Link href={entry.href} className="row" key={entry.id}>
-                  {entry.time ? <span className="nums meta w-16 shrink-0">{entry.time}</span> : null}
+                  <span className="nums meta w-20 shrink-0">
+                    {entry.time ?? (entry.allDay ? "all day" : "due")}
+                  </span>
                   <span className="title">
                     {entry.kind === "task" ? "○ " : null}
                     {entry.title}

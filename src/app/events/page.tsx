@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createEvent, deleteEvent } from "@/lib/actions/events";
-import { APP_TIMEZONE } from "@/lib/timezone";
+import { APP_TIMEZONE, eventTime } from "@/lib/timezone";
 import Frame from "../frame";
 import { Panel, PanelEmpty } from "../panel";
 
@@ -31,13 +31,12 @@ export default async function EventsPage() {
           events.map((e) => (
             <div className="row" key={e.id}>
               <span className="nums meta shrink-0">
-                {new Date(e.start_time).toLocaleString([], {
+                {new Date(e.start_time).toLocaleDateString([], {
                   month: "numeric",
                   day: "numeric",
-                  hour: "numeric",
-                  minute: "2-digit",
                   timeZone: APP_TIMEZONE,
                 })}
+                , {eventTime(new Date(e.start_time)).label}
               </span>
               <span className="title">{e.title}</span>
               {e.location ? <span className="meta">{e.location}</span> : null}

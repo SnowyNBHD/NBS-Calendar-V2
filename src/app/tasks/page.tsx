@@ -1,8 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
+import { APP_TIMEZONE } from "@/lib/timezone";
 import { createTask, deleteTask, setTaskStatus } from "@/lib/actions/tasks";
 import Frame from "../frame";
 import { Panel, PanelEmpty } from "../panel";
 import { Chip } from "../chip";
+
+// Due dates default to 11:59 PM ("due that day"), so the time is only worth
+// showing when it is something else.
+function dueLabel(iso: string) {
+  const due = new Date(iso);
+  const date = due.toLocaleDateString([], { month: "numeric", day: "numeric", timeZone: APP_TIMEZONE });
+  const time = due.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: APP_TIMEZONE });
+  return time === "11:59 PM" ? date : `${date}, ${time}`;
+}
 
 export default async function TasksPage() {
   const supabase = await createClient();
@@ -41,13 +51,8 @@ export default async function TasksPage() {
               <span className="title">
                 {t.title}
                 {t.due_date ? (
-                  <span className="nums meta ml-2">
-                    {new Date(t.due_date).toLocaleString([], {
-                      month: "numeric",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
+                  <span className="nums meta mt-0.5 block sm:ml-2 sm:mt-0 sm:inline">
+                    {dueLabel(t.due_date)}
                   </span>
                 ) : null}
               </span>

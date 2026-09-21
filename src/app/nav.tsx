@@ -22,10 +22,10 @@ export default async function Nav() {
 
   return (
     <nav className="border-b border-oxblood-dim">
-      <div className="mx-auto flex max-w-2xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 text-[0.95rem]">
-        <span className="tracking-wide text-ink">NBS.CALENDAR</span>
+      <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 text-[1rem] sm:px-6 lg:px-8 lg:py-4">
+        <span className="order-1 tracking-wide text-ink">NBS.CALENDAR</span>
 
-        <div className="flex flex-wrap gap-4 text-ink-muted">
+        <div className="order-3 flex w-full flex-wrap gap-x-4 gap-y-1 text-ink-muted sm:order-2 sm:w-auto sm:gap-x-5">
           <Link href="/today" className="hover:text-oxblood-bright">
             today
           </Link>
@@ -58,16 +58,19 @@ export default async function Nav() {
           </Link>
         </div>
 
-        <form action={captureBrainDump} className="order-last flex min-w-[180px] flex-1 gap-2 sm:order-none">
+        <form
+          action={captureBrainDump}
+          className="order-4 flex w-full gap-2 sm:order-3 sm:w-auto sm:min-w-[200px] sm:flex-1"
+        >
           <input
             name="content"
             placeholder="&gt; brain dump..."
             required
-            className="field w-full py-1.5 text-[0.9rem]"
+            className="field w-full py-1.5 text-[0.95rem]"
           />
         </form>
 
-        <div className="ml-auto flex items-center gap-5 text-ink-faint">
+        <div className="order-2 ml-auto flex items-center gap-4 text-ink-faint sm:order-4 sm:gap-5">
           <NotificationToggle />
           <Clock />
           <form action={signOut}>
