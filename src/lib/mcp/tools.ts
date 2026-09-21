@@ -22,8 +22,9 @@ export function registerTools(server: McpServer) {
       description:
         "Get current situational awareness: active tasks, upcoming events (next 14 days), " +
         "active lists, projects (description, to-do items and done items), notes the owner " +
-        "shared with you plus any open or answered questions you asked, and unsorted " +
-        "brain-dump items. Call this before organizing anything so you know what already exists.",
+        "shared with you plus any open or answered questions you asked, what was completed " +
+        "since the start of yesterday (tasks and project items), and unsorted brain-dump " +
+        "items. Call this before organizing anything so you know what already exists.",
       inputSchema: z.object({}),
     },
     async () => {
@@ -31,32 +32,55 @@ export function registerTools(server: McpServer) {
         const { start: todayStart } = localDayRange();
         const horizon = new Date(todayStart);
         horizon.setDate(horizon.getDate() + 14);
+        const { start: yesterdayStart } = localDayRange(
+          new Date(todayStart.getTime() - 12 * 3600 * 1000),
+        );
 
-        const [{ data: tasks }, { data: events }, { data: lists }, { data: inbox }, projects, notes] =
-          await Promise.all([
-            admin
-              .from("tasks")
-              .select("id, title, notes, status, priority, due_date, list_id, event_id")
-              .eq("status", "active")
-              .order("due_date", { ascending: true, nullsFirst: false }),
-            admin
-              .from("events")
-              .select("id, title, start_time, end_time, location, source")
-              .gte("start_time", todayStart.toISOString())
-              .lt("start_time", horizon.toISOString())
-              .order("start_time", { ascending: true }),
-            admin
-              .from("lists")
-              .select("id, name, type, list_items(count)")
-              .order("name"),
-            admin
-              .from("brain_dump_inbox")
-              .select("id, raw_content, created_at")
-              .eq("status", "unprocessed")
-              .order("created_at", { ascending: true }),
-            fetchProjectsWithItems(admin),
-            fetchNotesForClaude(admin),
-          ]);
+        const [
+          { data: tasks },
+          { data: events },
+          { data: lists },
+          { data: inbox },
+          projects,
+          notes,
+          { data: doneTasks },
+          { data: doneItems },
+        ] = await Promise.all([
+          admin
+            .from("tasks")
+            .select("id, title, notes, status, priority, due_date, list_id, event_id")
+            .eq("status", "active")
+            .order("due_date", { ascending: true, nullsFirst: false }),
+          admin
+            .from("events")
+            .select("id, title, start_time, end_time, location, source")
+            .gte("start_time", todayStart.toISOString())
+            .lt("start_time", horizon.toISOString())
+            .order("start_time", { ascending: true }),
+          admin
+            .from("lists")
+            .select("id, name, type, list_items(count)")
+            .order("name"),
+          admin
+            .from("brain_dump_inbox")
+            .select("id, raw_content, created_at")
+            .eq("status", "unprocessed")
+            .order("created_at", { ascending: true }),
+          fetchProjectsWithItems(admin),
+          fetchNotesForClaude(admin),
+          admin
+            .from("tasks")
+            .select("id, title, completed_at")
+            .eq("status", "done")
+            .gte("completed_at", yesterdayStart.toISOString())
+            .order("completed_at", { ascending: false }),
+          admin
+            .from("project_items")
+            .select("content, done_at, projects(name)")
+            .eq("is_done", true)
+            .gte("done_at", yesterdayStart.toISOString())
+            .order("done_at", { ascending: false }),
+        ]);
 
         return textResult(
           JSON.stringify(
@@ -73,6 +97,14 @@ export function registerTools(server: McpServer) {
               })),
               projects,
               notes,
+              completed_since: yesterdayStart.toISOString(),
+              completed_recently: {
+                tasks: doneTasks,
+                project_items: doneItems?.map((i) => {
+                  const project = Array.isArray(i.projects) ? i.projects[0] : i.projects;
+                  return { content: i.content, project: project?.name ?? null, done_at: i.done_at };
+                }),
+              },
               unsorted_brain_dump: inbox,
             },
             null,
