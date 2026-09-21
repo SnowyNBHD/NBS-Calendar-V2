@@ -7,12 +7,14 @@ import { APP_TIMEZONE, localDayRange } from "@/lib/timezone";
 import { errorResult, textResult } from "@/lib/mcp/results";
 import { fetchProjectsWithItems, registerProjectTools } from "@/lib/mcp/project-tools";
 import { fetchNotesForClaude, registerNoteTools } from "@/lib/mcp/note-tools";
+import { registerBriefingTools } from "@/lib/mcp/briefing-tools";
 
 export function registerTools(server: McpServer) {
   const admin = createAdminClient();
 
   registerProjectTools(server);
   registerNoteTools(server);
+  registerBriefingTools(server);
 
   server.registerTool(
     "get_context",

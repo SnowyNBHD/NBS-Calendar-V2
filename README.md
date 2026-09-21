@@ -141,6 +141,16 @@ push) and mark them handled (`resolve_question`). Answer questions on the
 Notes page. Run `supabase/migrations/0006_notes.sql` once in the Supabase SQL
 editor, and reconnect the connector after deploying.
 
+## Daily briefing
+
+A scheduled agent (for example a Claude Desktop scheduled task) can publish a
+daily HTML briefing through the `publish_briefing` MCP tool
+(`html`, optional `summary` and `title`). The app stores one briefing per
+local date, sends a push notification, and shows it at `/briefing` inside a
+sandboxed iframe (`Content-Security-Policy: sandbox`, no scripts, no remote
+images). Run `supabase/migrations/0007_briefings.sql` once in the Supabase SQL
+editor. After adding a tool, reconnect the connector in Claude so it sees it.
+
 ## Design
 
 "Deep Cockpit" theme: oxblood-on-void palette, VT323 for body text, Quantico

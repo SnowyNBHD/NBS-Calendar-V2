@@ -53,6 +53,9 @@ export default async function Nav() {
           <Link href="/inbox" className="hover:text-oxblood-bright">
             inbox
           </Link>
+          <Link href="/briefing" className="hover:text-oxblood-bright">
+            briefing
+          </Link>
         </div>
 
         <form action={captureBrainDump} className="order-last flex min-w-[180px] flex-1 gap-2 sm:order-none">
