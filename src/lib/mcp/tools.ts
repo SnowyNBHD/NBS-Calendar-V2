@@ -6,18 +6,21 @@ import { createGoogleCalendarEvent } from "@/lib/google/calendar";
 import { APP_TIMEZONE, localDayRange } from "@/lib/timezone";
 import { errorResult, textResult } from "@/lib/mcp/results";
 import { fetchProjectsWithItems, registerProjectTools } from "@/lib/mcp/project-tools";
+import { fetchNotesForClaude, registerNoteTools } from "@/lib/mcp/note-tools";
 
 export function registerTools(server: McpServer) {
   const admin = createAdminClient();
 
   registerProjectTools(server);
+  registerNoteTools(server);
 
   server.registerTool(
     "get_context",
     {
       description:
         "Get current situational awareness: active tasks, upcoming events (next 14 days), " +
-        "active lists, projects (description, to-do items and done items), and unsorted " +
+        "active lists, projects (description, to-do items and done items), notes the owner " +
+        "shared with you plus any open or answered questions you asked, and unsorted " +
         "brain-dump items. Call this before organizing anything so you know what already exists.",
       inputSchema: z.object({}),
     },
@@ -27,7 +30,7 @@ export function registerTools(server: McpServer) {
         const horizon = new Date(todayStart);
         horizon.setDate(horizon.getDate() + 14);
 
-        const [{ data: tasks }, { data: events }, { data: lists }, { data: inbox }, projects] =
+        const [{ data: tasks }, { data: events }, { data: lists }, { data: inbox }, projects, notes] =
           await Promise.all([
             admin
               .from("tasks")
@@ -50,6 +53,7 @@ export function registerTools(server: McpServer) {
               .eq("status", "unprocessed")
               .order("created_at", { ascending: true }),
             fetchProjectsWithItems(admin),
+            fetchNotesForClaude(admin),
           ]);
 
         return textResult(
@@ -66,6 +70,7 @@ export function registerTools(server: McpServer) {
                 item_count: l.list_items?.[0]?.count ?? 0,
               })),
               projects,
+              notes,
               unsorted_brain_dump: inbox,
             },
             null,

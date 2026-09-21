@@ -25,7 +25,7 @@
 
 ## File Structure
 
-- Create `supabase/migrations/0006_briefings.sql`: the table and RLS.
+- Create `supabase/migrations/0007_briefings.sql`: the table and RLS.
 - Create `src/lib/briefing/prepare.ts`: pure helpers (`BRIEFING_CSP`, `isBriefingDate`, `prepareBriefingHtml`). No imports, so Node can run it directly.
 - Create `src/lib/briefing/prepare.test.mjs`: tests for those helpers.
 - Modify `package.json`: add a `test` script.
@@ -42,7 +42,7 @@
 ### Task 1: Briefings table and HTML-preparation helpers
 
 **Files:**
-- Create: `supabase/migrations/0006_briefings.sql`
+- Create: `supabase/migrations/0007_briefings.sql`
 - Create: `src/lib/briefing/prepare.ts`
 - Test: `src/lib/briefing/prepare.test.mjs`
 - Modify: `package.json`
@@ -167,7 +167,7 @@ In `package.json`, add to `"scripts"` (after `"lint": "eslint"`, adding a comma 
     "test": "node --test \"src/**/*.test.mjs\""
 ```
 
-Create `supabase/migrations/0006_briefings.sql`:
+Create `supabase/migrations/0007_briefings.sql`:
 
 ```sql
 -- One briefing per local date, published by the scheduled daily-briefing
@@ -198,7 +198,7 @@ Expected: no output.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add supabase/migrations/0006_briefings.sql src/lib/briefing package.json
+git add supabase/migrations/0007_briefings.sql src/lib/briefing package.json
 git commit -m "Add briefings table and sandboxed-HTML helpers
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -206,7 +206,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 8: Checkpoint (blocks Task 2): owner applies the migration**
 
-Ask the owner to run the contents of `supabase/migrations/0006_briefings.sql` in the Supabase SQL editor and wait for confirmation before starting Task 2.
+Ask the owner to run the contents of `supabase/migrations/0007_briefings.sql` in the Supabase SQL editor and wait for confirmation before starting Task 2.
 
 ---
 
@@ -650,7 +650,7 @@ daily HTML briefing through the `publish_briefing` MCP tool
 (`html`, optional `summary` and `title`). The app stores one briefing per
 local date, sends a push notification, and shows it at `/briefing` inside a
 sandboxed iframe (`Content-Security-Policy: sandbox`, no scripts, no remote
-images). Run `supabase/migrations/0006_briefings.sql` once in the Supabase SQL
+images). Run `supabase/migrations/0007_briefings.sql` once in the Supabase SQL
 editor. After adding a tool, reconnect the connector in Claude so it sees it.
 
 ## Design

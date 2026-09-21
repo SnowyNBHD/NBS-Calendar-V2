@@ -18,7 +18,7 @@ briefing, notifies the owner's devices, and displays it at `/briefing`.
 
 ## Data
 
-Migration `0006_briefings.sql`:
+Migration `0007_briefings.sql`:
 
 - `briefings`: `id uuid pk`, `briefing_date date not null unique`,
   `title text not null`, `summary text`, `html text not null`,
@@ -102,7 +102,7 @@ existing pattern of build, lint, and direct checks.
 
 ## Rollout
 
-1. Owner runs `0006_briefings.sql` in the Supabase SQL editor.
+1. Owner runs `0007_briefings.sql` in the Supabase SQL editor.
 2. Deploy with `vercel --prod`.
 3. Owner reconnects the NBS Calendar connector if Claude Desktop does not
    see the new tool.

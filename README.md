@@ -131,6 +131,16 @@ through `get_context` and can create and edit them with the `create_project`,
 Run `supabase/migrations/0005_projects.sql` once in the Supabase SQL editor,
 and reconnect the connector in Claude after new tools are deployed.
 
+## Notes
+
+`/notes` holds notes you leave for yourself or for Claude. Notes are shared
+with Claude by default; mark one "just me" to hide it from Claude. Claude
+reads shared notes and open questions through `get_context`, and can leave
+notes (`create_note`), ask you questions (`ask_question`, which also sends a
+push) and mark them handled (`resolve_question`). Answer questions on the
+Notes page. Run `supabase/migrations/0006_notes.sql` once in the Supabase SQL
+editor, and reconnect the connector after deploying.
+
 ## Design
 
 "Deep Cockpit" theme: oxblood-on-void palette, VT323 for body text, Quantico

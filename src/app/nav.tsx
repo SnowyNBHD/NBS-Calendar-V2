@@ -13,6 +13,13 @@ export default async function Nav() {
 
   if (!user) return null;
 
+  const { count: openQuestions } = await supabase
+    .from("notes")
+    .select("id", { count: "exact", head: true })
+    .eq("kind", "question")
+    .is("answer", null)
+    .is("resolved_at", null);
+
   return (
     <nav className="border-b border-oxblood-dim">
       <div className="mx-auto flex max-w-2xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 text-[0.95rem]">
@@ -33,6 +40,12 @@ export default async function Nav() {
           </Link>
           <Link href="/projects" className="hover:text-oxblood-bright">
             projects
+          </Link>
+          <Link href="/notes" className="hover:text-oxblood-bright">
+            notes
+            {openQuestions ? (
+              <span className="nums text-oxblood-bright"> ({openQuestions})</span>
+            ) : null}
           </Link>
           <Link href="/events" className="hover:text-oxblood-bright">
             events
