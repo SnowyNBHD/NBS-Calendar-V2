@@ -31,6 +31,9 @@ export default async function Nav() {
           <Link href="/lists" className="hover:text-oxblood-bright">
             lists
           </Link>
+          <Link href="/projects" className="hover:text-oxblood-bright">
+            projects
+          </Link>
           <Link href="/events" className="hover:text-oxblood-bright">
             events
           </Link>

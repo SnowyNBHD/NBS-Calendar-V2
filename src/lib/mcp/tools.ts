@@ -4,26 +4,21 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getPersonalCalendarAccessToken } from "@/lib/google/personalSource";
 import { createGoogleCalendarEvent } from "@/lib/google/calendar";
 import { APP_TIMEZONE, localDayRange } from "@/lib/timezone";
-
-function textResult(text: string) {
-  return { content: [{ type: "text" as const, text }] };
-}
-
-function errorResult(error: unknown) {
-  const message = error instanceof Error ? error.message : String(error);
-  return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
-}
+import { errorResult, textResult } from "@/lib/mcp/results";
+import { fetchProjectsWithItems, registerProjectTools } from "@/lib/mcp/project-tools";
 
 export function registerTools(server: McpServer) {
   const admin = createAdminClient();
+
+  registerProjectTools(server);
 
   server.registerTool(
     "get_context",
     {
       description:
         "Get current situational awareness: active tasks, upcoming events (next 14 days), " +
-        "active lists, and unsorted brain-dump items. Call this before organizing anything " +
-        "so you know what already exists.",
+        "active lists, projects (description, to-do items and done items), and unsorted " +
+        "brain-dump items. Call this before organizing anything so you know what already exists.",
       inputSchema: z.object({}),
     },
     async () => {
@@ -32,7 +27,7 @@ export function registerTools(server: McpServer) {
         const horizon = new Date(todayStart);
         horizon.setDate(horizon.getDate() + 14);
 
-        const [{ data: tasks }, { data: events }, { data: lists }, { data: inbox }] =
+        const [{ data: tasks }, { data: events }, { data: lists }, { data: inbox }, projects] =
           await Promise.all([
             admin
               .from("tasks")
@@ -54,6 +49,7 @@ export function registerTools(server: McpServer) {
               .select("id, raw_content, created_at")
               .eq("status", "unprocessed")
               .order("created_at", { ascending: true }),
+            fetchProjectsWithItems(admin),
           ]);
 
         return textResult(
@@ -69,6 +65,7 @@ export function registerTools(server: McpServer) {
                 type: l.type,
                 item_count: l.list_items?.[0]?.count ?? 0,
               })),
+              projects,
               unsorted_brain_dump: inbox,
             },
             null,

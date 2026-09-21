@@ -122,6 +122,15 @@ allow list, or Google sign-in will fail on the deployed site.
 4. Additional request headers: add `Authorization` = `Bearer <MCP_API_KEY>`.
 5. Save, then click Connect.
 
+## Projects
+
+Each project has a name, a description, a to-do list and a done list (its own
+checklist, separate from tasks) at `/projects`. Claude reads every project
+through `get_context` and can create and edit them with the `create_project`,
+`update_project`, `add_project_items` and `update_project_item` MCP tools.
+Run `supabase/migrations/0005_projects.sql` once in the Supabase SQL editor,
+and reconnect the connector in Claude after new tools are deployed.
+
 ## Design
 
 "Deep Cockpit" theme: oxblood-on-void palette, VT323 for body text, Quantico
